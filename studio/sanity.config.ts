@@ -1,6 +1,7 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
+import {frFRLocale} from '@sanity/locale-fr-fr'
 import {schemaTypes} from './schemaTypes'
 
 // Le Project ID et le dataset sont lus depuis les variables d'environnement
@@ -15,7 +16,7 @@ export default defineConfig({
   projectId,
   dataset,
 
-  plugins: [structureTool(), visionTool()],
+  plugins: [structureTool(), visionTool(), frFRLocale()],
 
   schema: {
     types: schemaTypes,
