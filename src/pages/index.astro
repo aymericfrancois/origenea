@@ -1,5 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getSiteInfo, getPageAccueil } from '../lib/sanity';
+
+const siteInfo = await getSiteInfo();
+const page = await getPageAccueil();
 
 const schema = JSON.stringify({
   "@context": "https://schema.org",
@@ -34,8 +38,8 @@ const schema = JSON.stringify({
   <div class="wrap hero__grid">
     <div class="reveal">
       <span class="eyebrow">Cabinet de généalogie · Libourne, Gironde</span>
-      <h1>Retrouvez le fil de votre histoire familiale</h1>
-      <p class="lead">Derrière chaque nom se cache une vie, un lieu, une époque. J'explore les archives pour reconstituer votre ascendance et transmettre, aux générations suivantes, la mémoire des vôtres.</p>
+      <h1>{page?.heroTitre ?? "Retrouvez le fil de votre histoire familiale"}</h1>
+      <p class="lead">{page?.heroLead ?? "Derrière chaque nom se cache une vie, un lieu, une époque. J'explore les archives pour reconstituer votre ascendance et transmettre, aux générations suivantes, la mémoire des vôtres."}</p>
       <div class="hero__cta">
         <a class="btn btn--primary" href="/services">
           Découvrir les services
@@ -63,22 +67,33 @@ const schema = JSON.stringify({
 <section class="section--tight">
   <div class="wrap">
     <div class="trust reveal">
-      <div class="trust__item">
-        <span class="trust__num">+15 ans</span>
-        <span class="trust__lbl">de recherches en archives</span>
-      </div>
-      <div class="trust__item">
-        <span class="trust__num">4 à 12</span>
-        <span class="trust__lbl">générations remontées</span>
-      </div>
-      <div class="trust__item">
-        <span class="trust__num">Gironde</span>
-        <span class="trust__lbl">& Nouvelle-Aquitaine</span>
-      </div>
-      <div class="trust__item">
-        <span class="trust__num">Sur devis</span>
-        <span class="trust__lbl">étude personnalisée</span>
-      </div>
+      {page?.trustItems && page.trustItems.length > 0 ? (
+        page.trustItems.map((item) => (
+          <div class="trust__item">
+            <span class="trust__num">{item.valeur}</span>
+            <span class="trust__lbl">{item.libelle}</span>
+          </div>
+        ))
+      ) : (
+        <>
+          <div class="trust__item">
+            <span class="trust__num">+15 ans</span>
+            <span class="trust__lbl">de recherches en archives</span>
+          </div>
+          <div class="trust__item">
+            <span class="trust__num">4 à 12</span>
+            <span class="trust__lbl">générations remontées</span>
+          </div>
+          <div class="trust__item">
+            <span class="trust__num">Gironde</span>
+            <span class="trust__lbl">& Nouvelle-Aquitaine</span>
+          </div>
+          <div class="trust__item">
+            <span class="trust__num">Sur devis</span>
+            <span class="trust__lbl">étude personnalisée</span>
+          </div>
+        </>
+      )}
     </div>
   </div>
 </section>
@@ -88,9 +103,9 @@ const schema = JSON.stringify({
   <div class="wrap narrow" style="text-align:center">
     <span class="eyebrow reveal" style="justify-content:center">Le mot de Catherine</span>
     <p class="reveal" style="font-family:var(--font-display);font-weight:var(--display-weight);font-size:clamp(1.5rem,3vw,2.05rem);line-height:1.35;color:var(--ink-strong);letter-spacing:var(--display-tracking);margin-bottom:1.2em">
-      « Comprendre d'où l'on vient, c'est mieux savoir qui l'on est. Mon métier consiste à redonner un visage et une histoire à des noms parfois oubliés. »
+      {page?.citationCatherine ?? "« Comprendre d'où l'on vient, c'est mieux savoir qui l'on est. Mon métier consiste à redonner un visage et une histoire à des noms parfois oubliés. »"}
     </p>
-    <p class="reveal lead">Je suis Catherine Fougeray-Imbrechts, généalogiste à Libourne. Patiemment, document après document, je remonte le temps avec vous — registres paroissiaux, actes notariés, recensements, cadastre — pour bâtir un récit fiable, sourcé et transmissible.</p>
+    <p class="reveal lead">{page?.introParagraphe ?? "Je suis Catherine Fougeray-Imbrechts, généalogiste à Libourne. Patiemment, document après document, je remonte le temps avec vous — registres paroissiaux, actes notariés, recensements, cadastre — pour bâtir un récit fiable, sourcé et transmissible."}</p>
     <p class="reveal" data-delay="80" style="margin-top:26px">
       <a class="link-arrow" href="/a-propos">
         Découvrir mon parcours
@@ -199,8 +214,8 @@ const schema = JSON.stringify({
   <div class="wrap">
     <figure class="quote reveal">
       <span class="quote__mark">&ldquo;</span>
-      <blockquote>Catherine a retrouvé la trace de mon arrière-grand-père, parti d'un village du Libournais en 1889. Lire son acte de mariage, c'était comme lui serrer la main.</blockquote>
-      <figcaption>Hélène M. — <strong>Saint-Émilion</strong></figcaption>
+      <blockquote>{page?.temoignage ?? "Catherine a retrouvé la trace de mon arrière-grand-père, parti d'un village du Libournais en 1889. Lire son acte de mariage, c'était comme lui serrer la main."}</blockquote>
+      <figcaption>{page?.temoignageAuteur ?? "Hélène M. — Saint-Émilion"}</figcaption>
     </figure>
   </div>
 </section>

@@ -1,5 +1,91 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getPageServices } from '../lib/sanity';
+
+const page = await getPageServices();
+
+// Fallbacks statiques
+const defaultServices = [
+  {
+    _key: 'svc1',
+    titre: 'Généalogie familiale',
+    lead: "Reconstituer votre ascendance, génération après génération, et redonner vie au parcours de celles et ceux qui vous ont précédé.",
+    description: "Je remonte vos lignées à partir des registres paroissiaux, de l'état civil, des recensements et des actes notariés. Que vous souhaitiez explorer une seule branche ou l'ensemble de votre arbre, l'étude est calibrée selon votre objectif et votre budget.",
+    listeItems: [
+      'Recherches ascendantes en ligne agnatique (paternelle) ou cognatique (maternelle)',
+      'Arbres généalogiques sur 4 générations, 5 générations et au-delà',
+      "Recherche ciblée sur le parcours d'un ancêtre en particulier",
+      'Synthèse narrative et copies des actes sources',
+    ],
+  },
+  {
+    _key: 'svc2',
+    titre: 'Généalogie foncière',
+    lead: "Les maisons aussi ont une généalogie. Découvrez qui a vécu entre vos murs et comment votre propriété a traversé les époques.",
+    description: "À partir des actes de vente, des partages successoraux et du cadastre ancien, je reconstitue l'histoire d'un domaine, d'une demeure ou d'une parcelle — un récit précieux pour une famille, une transmission ou une restauration.",
+    listeItems: [
+      "Histoire d'un bâtiment ou d'une propriété",
+      'Identification des propriétaires successifs',
+      'Lecture du cadastre napoléonien et des matrices',
+      'Restitution illustrée de la chaîne de propriété',
+    ],
+  },
+  {
+    _key: 'svc3',
+    titre: 'Sous-traitance successorale',
+    lead: "Un partenaire de confiance pour les notaires et généalogistes successoraux qui ont besoin d'un appui documentaire fiable.",
+    description: "J'interviens en sous-traitance sur des recherches d'héritiers et la reconstitution de dévolutions. Méthode rigoureuse, sources tracées, confidentialité absolue : vous gardez la main, je sécurise la recherche.",
+    listeItems: [
+      "Recherches d'héritiers et de filiations",
+      'Reconstitution de dévolutions successorales',
+      'Appui documentaire pour études notariales',
+      'Dossiers sourcés, prêts à intégrer à vos actes',
+    ],
+  },
+];
+
+const defaultFaq = [
+  {
+    _key: 'faq1',
+    question: 'De quelles informations avez-vous besoin pour démarrer ?',
+    reponse: "Un nom, une date et un lieu approximatif suffisent souvent à ouvrir une piste. Vos vieux papiers de famille — livret de famille, faire-part, photos annotées — sont de précieux points de départ.",
+  },
+  {
+    _key: 'faq2',
+    question: "Jusqu'à quelle époque peut-on remonter ?",
+    reponse: "En France, l'état civil et les registres paroissiaux permettent souvent d'atteindre le XVIIe siècle, parfois plus tôt. Tout dépend de la conservation des fonds et des aléas de l'histoire locale.",
+  },
+  {
+    _key: 'faq3',
+    question: 'Intervenez-vous en dehors de la Gironde ?',
+    reponse: "Oui. Basée à Libourne, je travaille sur place dans toute la Nouvelle-Aquitaine et mène des recherches à distance partout en France, grâce aux archives numérisées et à mon réseau de correspondants.",
+  },
+  {
+    _key: 'faq4',
+    question: 'Mes données restent-elles confidentielles ?',
+    reponse: "Absolument. Vos informations personnelles et les résultats de recherche ne sont partagés avec personne. La discrétion est au cœur de ma pratique.",
+  },
+];
+
+const services = page?.services && page.services.length > 0 ? page.services : defaultServices;
+const faq = page?.faq && page.faq.length > 0 ? page.faq : defaultFaq;
+
+// Icônes SVG statiques par index de service
+const serviceIcons = [
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <path d="M12 3v6m0 0c-2-1-4-3-4-5M12 9c2-1 4-3 4-5M12 21v-7m0 0c-3-1-6-1-9-3m9 3c3-1 6-1 9-3" stroke-linecap="round"/>
+    <circle cx="12" cy="3" r="1.3" fill="currentColor"/>
+  </svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <path d="M4 21V8l8-5 8 5v13M4 21h16M9 21v-5h6v5M8 11h.01M12 11h.01M16 11h.01" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <path d="M7 3h7l4 4v14H7z M14 3v4h4M9.5 12h5M9.5 15.5h5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+];
+
+const serviceEyebrows = ['01 — Le cœur du métier', '02 — Murs &amp; mémoire', '03 — Pour les professionnels'];
+const serviceIds = ['familiale', 'fonciere', 'successorale'];
 ---
 
 <Base
@@ -13,84 +99,35 @@ import Base from '../layouts/Base.astro';
   <div class="wrap">
     <span class="eyebrow reveal">Prestations</span>
     <h1 class="reveal">Trois manières de remonter le temps</h1>
-    <p class="lead reveal">De la quête de vos ancêtres à l'histoire d'une maison, en passant par l'appui aux études notariales : chaque mission est unique, conduite avec rigueur et discrétion, depuis Libourne et partout en Gironde.</p>
+    <p class="lead reveal">{page?.heroLead ?? "De la quête de vos ancêtres à l'histoire d'une maison, en passant par l'appui aux études notariales : chaque mission est unique, conduite avec rigueur et discrétion, depuis Libourne et partout en Gironde."}</p>
   </div>
 </section>
 
-<!-- ============================ SERVICE 1 — FAMILIALE ============================ -->
-<section class="section band-paper2 band-edge-top" id="familiale">
-  <div class="wrap">
-    <div class="grid grid-2" style="align-items:center;gap:clamp(40px,6vw,80px)">
-      <div class="reveal">
-        <span class="eyebrow">01 — Le cœur du métier</span>
-        <h2>Généalogie familiale</h2>
-        <p class="lead" style="margin-bottom:1.4em">Reconstituer votre ascendance, génération après génération, et redonner vie au parcours de celles et ceux qui vous ont précédé.</p>
-        <p style="color:var(--ink-soft)">Je remonte vos lignées à partir des registres paroissiaux, de l'état civil, des recensements et des actes notariés. Que vous souhaitiez explorer une seule branche ou l'ensemble de votre arbre, l'étude est calibrée selon votre objectif et votre budget.</p>
-      </div>
-      <div class="reveal" data-delay="100">
-        <div class="card" style="background:var(--paper)">
-          <h4 style="margin-bottom:18px">Ce que comprend cette prestation</h4>
-          <ul class="card__list" style="margin-top:0">
-            <li>Recherches ascendantes en ligne <strong>agnatique</strong> (paternelle) ou <strong>cognatique</strong> (maternelle)</li>
-            <li>Arbres généalogiques sur <strong>4 générations, 5 générations</strong> et au-delà</li>
-            <li>Recherche ciblée sur le <strong>parcours d'un ancêtre</strong> en particulier</li>
-            <li>Synthèse narrative et copies des actes sources</li>
-          </ul>
+<!-- ============================ SERVICES ============================ -->
+{services.map((svc, i) => (
+  <section class={`section${i === 0 ? ' band-paper2 band-edge-top' : i === 2 ? ' band-paper2 band-edge-top band-edge-bottom' : ''}`} id={serviceIds[i] ?? `service-${i}`}>
+    <div class="wrap">
+      <div class="grid grid-2" style="align-items:center;gap:clamp(40px,6vw,80px)">
+        <div class={`reveal${i === 1 ? ' order-1' : ''}`} style={i === 1 ? 'order:1' : undefined}>
+          <span class="eyebrow" set:html={serviceEyebrows[i] ?? `0${i+1}`} />
+          <h2>{svc.titre}</h2>
+          <p class="lead" style="margin-bottom:1.4em">{svc.lead}</p>
+          <p style="color:var(--ink-soft)">{svc.description}</p>
+        </div>
+        <div class={`reveal${i === 1 ? ' order-2' : ''}`} data-delay="100" style={i === 1 ? 'order:2' : undefined}>
+          <div class={`card${i !== 1 ? ' card' : ''}`} style={i === 0 || i === 2 ? 'background:var(--paper)' : undefined}>
+            <h4 style="margin-bottom:18px">Ce que comprend cette prestation</h4>
+            <ul class="card__list" style="margin-top:0">
+              {svc.listeItems && svc.listeItems.map((item) => (
+                <li set:html={item} />
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ============================ SERVICE 2 — FONCIÈRE ============================ -->
-<section class="section" id="fonciere">
-  <div class="wrap">
-    <div class="grid grid-2" style="align-items:center;gap:clamp(40px,6vw,80px)">
-      <div class="reveal" data-delay="100" style="order:2">
-        <div class="card">
-          <h4 style="margin-bottom:18px">Ce que comprend cette prestation</h4>
-          <ul class="card__list" style="margin-top:0">
-            <li>Histoire d'un <strong>bâtiment</strong> ou d'une <strong>propriété</strong></li>
-            <li>Identification des <strong>propriétaires successifs</strong></li>
-            <li>Lecture du <strong>cadastre napoléonien</strong> et des matrices</li>
-            <li>Restitution illustrée de la chaîne de propriété</li>
-          </ul>
-        </div>
-      </div>
-      <div class="reveal" style="order:1">
-        <span class="eyebrow">02 — Murs &amp; mémoire</span>
-        <h2>Généalogie foncière</h2>
-        <p class="lead" style="margin-bottom:1.4em">Les maisons aussi ont une généalogie. Découvrez qui a vécu entre vos murs et comment votre propriété a traversé les époques.</p>
-        <p style="color:var(--ink-soft)">À partir des actes de vente, des partages successoraux et du cadastre ancien, je reconstitue l'histoire d'un domaine, d'une demeure ou d'une parcelle — un récit précieux pour une famille, une transmission ou une restauration.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================ SERVICE 3 — SUCCESSORALE ============================ -->
-<section class="section band-paper2 band-edge-top band-edge-bottom" id="successorale">
-  <div class="wrap">
-    <div class="grid grid-2" style="align-items:center;gap:clamp(40px,6vw,80px)">
-      <div class="reveal">
-        <span class="eyebrow">03 — Pour les professionnels</span>
-        <h2>Sous-traitance successorale</h2>
-        <p class="lead" style="margin-bottom:1.4em">Un partenaire de confiance pour les notaires et généalogistes successoraux qui ont besoin d'un appui documentaire fiable.</p>
-        <p style="color:var(--ink-soft)">J'interviens en sous-traitance sur des recherches d'héritiers et la reconstitution de dévolutions. Méthode rigoureuse, sources tracées, confidentialité absolue : vous gardez la main, je sécurise la recherche.</p>
-      </div>
-      <div class="reveal" data-delay="100">
-        <div class="card" style="background:var(--paper)">
-          <h4 style="margin-bottom:18px">Ce que comprend cette prestation</h4>
-          <ul class="card__list" style="margin-top:0">
-            <li>Recherches d'<strong>héritiers</strong> et de filiations</li>
-            <li>Reconstitution de <strong>dévolutions successorales</strong></li>
-            <li>Appui documentaire pour <strong>études notariales</strong></li>
-            <li>Dossiers sourcés, prêts à intégrer à vos actes</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
+))}
 
 <!-- ============================ DÉROULÉ / TARIFS ============================ -->
 <section class="section">
@@ -140,22 +177,12 @@ import Base from '../layouts/Base.astro';
     <span class="eyebrow reveal">Questions fréquentes</span>
     <h2 class="reveal" style="margin-bottom:40px">Avant de commencer</h2>
     <div class="reveal">
-      <details class="faq">
-        <summary>De quelles informations avez-vous besoin pour démarrer ?</summary>
-        <p>Un nom, une date et un lieu approximatif suffisent souvent à ouvrir une piste. Vos vieux papiers de famille — livret de famille, faire-part, photos annotées — sont de précieux points de départ.</p>
-      </details>
-      <details class="faq">
-        <summary>Jusqu'à quelle époque peut-on remonter ?</summary>
-        <p>En France, l'état civil et les registres paroissiaux permettent souvent d'atteindre le XVIIᵉ siècle, parfois plus tôt. Tout dépend de la conservation des fonds et des aléas de l'histoire locale.</p>
-      </details>
-      <details class="faq">
-        <summary>Intervenez-vous en dehors de la Gironde ?</summary>
-        <p>Oui. Basée à Libourne, je travaille sur place dans toute la Nouvelle-Aquitaine et mène des recherches à distance partout en France, grâce aux archives numérisées et à mon réseau de correspondants.</p>
-      </details>
-      <details class="faq">
-        <summary>Mes données restent-elles confidentielles ?</summary>
-        <p>Absolument. Vos informations personnelles et les résultats de recherche ne sont partagés avec personne. La discrétion est au cœur de ma pratique.</p>
-      </details>
+      {faq.map((item) => (
+        <details class="faq">
+          <summary>{item.question}</summary>
+          <p>{item.reponse}</p>
+        </details>
+      ))}
     </div>
   </div>
 </section>

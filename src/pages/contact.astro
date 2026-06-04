@@ -1,5 +1,21 @@
 ---
 import Base from '../layouts/Base.astro';
+import { getSiteInfo } from '../lib/sanity';
+
+const siteInfo = await getSiteInfo();
+
+const adresse_rue = siteInfo?.adresse_rue ?? '12 rue Montesquieu';
+const adresse_cp = siteInfo?.adresse_cp ?? '33500';
+const adresse_ville = siteInfo?.adresse_ville ?? 'Libourne';
+const telephone = siteInfo?.telephone ?? '+33557251234';
+const telephone_affiche = siteInfo?.telephone_affiche ?? '05 57 25 12 34';
+const email = siteInfo?.email ?? 'contact@origenea.fr';
+const horaires = siteInfo?.horaires ?? 'Du lundi au vendredi, 9h–18h';
+const horaires_detail = siteInfo?.horaires_detail ?? 'Rendez-vous en visioconférence ou sur place';
+const zone_intervention = siteInfo?.zone_intervention ?? [
+  'Libourne', 'Saint-Émilion', 'Coutras', 'Castillon-la-Bataille',
+  'Bordeaux', 'Arcachon', 'Blaye', 'Toute la Gironde', 'Nouvelle-Aquitaine',
+];
 
 const schema = JSON.stringify({
   "@context": "https://schema.org",
@@ -10,14 +26,14 @@ const schema = JSON.stringify({
   "areaServed": ["Libourne", "Saint-Émilion", "Bordeaux", "Gironde", "Nouvelle-Aquitaine"],
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "12 rue Montesquieu",
-    "addressLocality": "Libourne",
-    "postalCode": "33500",
+    "streetAddress": adresse_rue,
+    "addressLocality": adresse_ville,
+    "postalCode": adresse_cp,
     "addressRegion": "Gironde",
     "addressCountry": "FR"
   },
-  "telephone": "+33557251234",
-  "email": "contact@origenea.fr",
+  "telephone": telephone,
+  "email": email,
   "url": "https://www.origenea.fr",
   "openingHours": "Mo-Fr 09:00-18:00"
 });
@@ -88,7 +104,7 @@ const schema = JSON.stringify({
             Envoyer ma demande
           </button>
           <p style="margin-top:14px;text-align:center;font-size:.88rem;color:var(--ink-soft)">
-            Formulaire de démonstration — pour un échange réel, écrivez à contact@origenea.fr.
+            Formulaire de démonstration — pour un échange réel, écrivez à {email}.
           </p>
         </form>
       </div>
@@ -108,7 +124,7 @@ const schema = JSON.stringify({
           </span>
           <div>
             <div class="lbl">Adresse</div>
-            <div class="val">12 rue Montesquieu<br />33500 Libourne, Gironde</div>
+            <div class="val">{adresse_rue}<br />{adresse_cp} {adresse_ville}, Gironde</div>
           </div>
         </li>
         <li>
@@ -119,7 +135,7 @@ const schema = JSON.stringify({
           </span>
           <div>
             <div class="lbl">Téléphone</div>
-            <div class="val"><a href="tel:+33557251234">05 57 25 12 34</a></div>
+            <div class="val"><a href={`tel:${telephone}`}>{telephone_affiche}</a></div>
           </div>
         </li>
         <li>
@@ -131,7 +147,7 @@ const schema = JSON.stringify({
           </span>
           <div>
             <div class="lbl">E-mail</div>
-            <div class="val"><a href="mailto:contact@origenea.fr">contact@origenea.fr</a></div>
+            <div class="val"><a href={`mailto:${email}`}>{email}</a></div>
           </div>
         </li>
         <li>
@@ -144,8 +160,8 @@ const schema = JSON.stringify({
           <div>
             <div class="lbl">Horaires</div>
             <div class="val">
-              Du lundi au vendredi, 9h–18h<br />
-              <span style="color:var(--ink-soft);font-size:.95rem">Rendez-vous en visioconférence ou sur place</span>
+              {horaires}<br />
+              <span style="color:var(--ink-soft);font-size:.95rem">{horaires_detail}</span>
             </div>
           </div>
         </li>
@@ -178,15 +194,9 @@ const schema = JSON.stringify({
     <h2 class="reveal" style="margin-bottom:.6em">Au plus près de vos racines girondines</h2>
     <p class="reveal lead" style="max-width:60ch;margin:0 auto 36px">Basée à Libourne, j'interviens sur place dans tout le département et mène des recherches à distance partout en France.</p>
     <div class="reveal pills" data-delay="80">
-      <span class="pill">Libourne</span>
-      <span class="pill">Saint-Émilion</span>
-      <span class="pill">Coutras</span>
-      <span class="pill">Castillon-la-Bataille</span>
-      <span class="pill">Bordeaux</span>
-      <span class="pill">Arcachon</span>
-      <span class="pill">Blaye</span>
-      <span class="pill">Toute la Gironde</span>
-      <span class="pill">Nouvelle-Aquitaine</span>
+      {zone_intervention.map((ville) => (
+        <span class="pill">{ville}</span>
+      ))}
     </div>
   </div>
 </section>

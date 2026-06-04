@@ -9,6 +9,8 @@ import {schemaTypes} from './schemaTypes'
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID!
 const dataset = process.env.SANITY_STUDIO_DATASET || 'production'
 
+const singletonTypes = new Set(['siteInfo', 'pageAccueil', 'pageAPropos', 'pageServices'])
+
 export default defineConfig({
   name: 'origenea',
   title: 'Origenea',
@@ -16,9 +18,65 @@ export default defineConfig({
   projectId,
   dataset,
 
-  plugins: [structureTool(), visionTool(), frFRLocale()],
+  plugins: [
+    structureTool({
+      structure: (S) =>
+        S.list()
+          .title('Contenu')
+          .items([
+            S.listItem()
+              .title('📋 Informations du cabinet')
+              .id('siteInfo')
+              .child(
+                S.document()
+                  .schemaType('siteInfo')
+                  .documentId('siteInfo')
+                  .title('Informations du cabinet'),
+              ),
+            S.listItem()
+              .title('🏠 Page d\'accueil')
+              .id('pageAccueil')
+              .child(
+                S.document()
+                  .schemaType('pageAccueil')
+                  .documentId('pageAccueil')
+                  .title('Page d\'accueil'),
+              ),
+            S.listItem()
+              .title('👤 Page À propos')
+              .id('pageAPropos')
+              .child(
+                S.document()
+                  .schemaType('pageAPropos')
+                  .documentId('pageAPropos')
+                  .title('Page À propos'),
+              ),
+            S.listItem()
+              .title('🛠 Page Services')
+              .id('pageServices')
+              .child(
+                S.document()
+                  .schemaType('pageServices')
+                  .documentId('pageServices')
+                  .title('Page Services'),
+              ),
+            S.divider(),
+            S.listItem()
+              .title('📝 Articles de blog')
+              .child(S.documentTypeList('blogPost').title('Articles de blog')),
+            S.listItem()
+              .title('📄 Pages libres')
+              .child(S.documentTypeList('page').title('Pages libres')),
+          ]),
+    }),
+    visionTool(),
+    frFRLocale(),
+  ],
 
   schema: {
     types: schemaTypes,
+    // Empêche la création de nouveaux documents pour les singletons
+    // (les __experimental_actions dans les schémas gèrent ça côté Studio)
+    templates: (prev) => prev.filter((t) => !singletonTypes.has(t.schemaType)),
   },
 })

@@ -136,8 +136,106 @@ export const getPageBySlug = (slug: string) =>
   safeFetch<CmsPage | null>(PAGE_BY_SLUG_QUERY, {slug}, null)
 
 // ----------------------------------------------------------------------------
+// Singletons de pages
+// ----------------------------------------------------------------------------
+export async function getSiteInfo() {
+  return safeFetch<SiteInfo | null>(
+    `*[_type == "siteInfo" && _id == "siteInfo"][0]`,
+    {},
+    null,
+  )
+}
+
+export async function getPageAccueil() {
+  return safeFetch<PageAccueil | null>(
+    `*[_type == "pageAccueil" && _id == "pageAccueil"][0]`,
+    {},
+    null,
+  )
+}
+
+export async function getPageAPropos() {
+  return safeFetch<PageAPropos | null>(
+    `*[_type == "pageAPropos" && _id == "pageAPropos"][0]`,
+    {},
+    null,
+  )
+}
+
+export async function getPageServices() {
+  return safeFetch<PageServices | null>(
+    `*[_type == "pageServices" && _id == "pageServices"][0]`,
+    {},
+    null,
+  )
+}
+
+// ----------------------------------------------------------------------------
 // Types
 // ----------------------------------------------------------------------------
+export interface SiteInfo {
+  adresse_rue?: string
+  adresse_ville?: string
+  adresse_cp?: string
+  telephone?: string
+  telephone_affiche?: string
+  email?: string
+  horaires?: string
+  horaires_detail?: string
+  zone_intervention?: string[]
+}
+
+export interface TrustItem {
+  _key: string
+  valeur: string
+  libelle: string
+}
+
+export interface PageAccueil {
+  heroTitre?: string
+  heroLead?: string
+  citationCatherine?: string
+  introParagraphe?: string
+  trustItems?: TrustItem[]
+  temoignage?: string
+  temoignageAuteur?: string
+}
+
+export interface Valeur {
+  _key: string
+  titre: string
+  description: string
+}
+
+export interface PageAPropos {
+  heroLead?: string
+  bio?: unknown
+  carteItems?: string[]
+  valeurs?: Valeur[]
+  sourcesList?: string[]
+  citation?: string
+}
+
+export interface ServiceItem {
+  _key: string
+  titre: string
+  lead: string
+  description: string
+  listeItems?: string[]
+}
+
+export interface FaqItem {
+  _key: string
+  question: string
+  reponse: string
+}
+
+export interface PageServices {
+  heroLead?: string
+  services?: ServiceItem[]
+  faq?: FaqItem[]
+}
+
 export interface BlogPost {
   title: string
   slug: string
