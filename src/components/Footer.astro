@@ -1,0 +1,83 @@
+---
+interface Props {
+  variant?: 'default' | 'blog' | 'contact';
+}
+const { variant = 'default' } = Astro.props;
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="Origenea">
+          <svg class="brand__mark" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <circle cx="24" cy="24" r="22.5" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+            <path d="M24 38V20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M24 24c-3-2-5-5-5-8 0-2 1.2-3.6 2.6-4.6M24 24c3-2 5-5 5-8 0-2-1.2-3.6-2.6-4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="24" cy="9" r="2.1" fill="currentColor"/>
+          </svg>
+          <span class="brand__word">
+            <span class="brand__name">Origenea</span>
+            <span class="brand__tag">Histoire · Famille</span>
+          </span>
+        </a>
+        <p>Cabinet de généalogie familiale et foncière de Catherine Fougeray-Imbrechts, à Libourne, en Gironde.</p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Navigation</h5>
+        <ul>
+          <li><a href="/">Accueil</a></li>
+          <li><a href="/services">Services</a></li>
+          <li><a href="/a-propos">À propos</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+
+      {variant === 'blog' ? (
+        <div class="footer-col">
+          <h5>Rubriques</h5>
+          <ul>
+            <li><a href="/blog">Généathème</a></li>
+            <li><a href="/blog">Challenge AZ</a></li>
+            <li><a href="/blog">Méthode</a></li>
+            <li><a href="/blog">Archives de la Gironde</a></li>
+          </ul>
+        </div>
+      ) : variant === 'contact' ? (
+        <div class="footer-col">
+          <h5>Coordonnées</h5>
+          <p class="footer-zone">
+            12 rue Montesquieu<br />
+            33500 Libourne, Gironde<br />
+            05 57 25 12 34<br />
+            contact@origenea.fr
+          </p>
+        </div>
+      ) : (
+        <div class="footer-col">
+          <h5>Prestations</h5>
+          <ul>
+            <li><a href="/services#familiale">Généalogie familiale</a></li>
+            <li><a href="/services#fonciere">Généalogie foncière</a></li>
+            <li><a href="/services#successorale">Sous-traitance successorale</a></li>
+          </ul>
+        </div>
+      )}
+
+      <div class="footer-col">
+        <h5>Zone d'intervention</h5>
+        <p class="footer-zone">
+          Libourne · Saint-Émilion · Coutras · Bordeaux · Gironde · Nouvelle-Aquitaine,
+          et recherches à distance partout en France.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 Origenea — Catherine Fougeray-Imbrechts. Tous droits réservés.</span>
+      <span>Libourne (33500), Gironde · contact@origenea.fr</span>
+    </div>
+  </div>
+</footer>
