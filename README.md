@@ -1,6 +1,47 @@
 # origenea
 Site web vitrine de généalogie pour maman
 
+Site **Astro** (statique, déployé sur Netlify) avec **Sanity.io** comme CMS headless.
+
+## CMS — Sanity.io
+
+Le contenu (articles de blog et pages) est édité dans **Sanity Studio** (dossier
+`studio/`, voir `studio/README.md`) et récupéré par Astro **au moment du build**.
+
+### Configuration locale
+
+1. Copier `.env.example` en `.env` à la racine et renseigner :
+   - `PUBLIC_SANITY_PROJECT_ID` — l'ID du projet Sanity (https://www.sanity.io/manage)
+   - `PUBLIC_SANITY_DATASET` — en général `production`
+   - `SANITY_API_READ_TOKEN` — **uniquement** si le dataset est privé
+2. `npm install && npm run dev`
+3. Studio : `cd studio && cp .env.example .env && npm install && npm run dev` (http://localhost:3333)
+
+### Variables à ajouter dans Netlify
+
+Dans *Site settings → Environment variables* :
+
+| Variable | Valeur | Obligatoire |
+|---|---|---|
+| `PUBLIC_SANITY_PROJECT_ID` | l'ID du projet Sanity | ✅ |
+| `PUBLIC_SANITY_DATASET` | `production` | ✅ |
+| `SANITY_API_READ_TOKEN` | token de lecture | seulement si dataset privé |
+
+### Redéploiement automatique à la publication
+
+Comme le contenu est lu au build, il faut relancer le build quand le contenu change :
+
+1. **Netlify** → *Site settings → Build & deploy → Build hooks* → créer un hook → copier l'URL.
+2. **Sanity** → https://www.sanity.io/manage → projet → *API → Webhooks* → *Create webhook* :
+   coller l'URL du build hook Netlify, méthode `POST`, déclencheurs *Create / Update / Delete*.
+
+### Pages dynamiques
+
+- Blog : `/blog` (liste) et `/blog/<slug>` (article) — type Sanity `blogPost`.
+- Pages CMS : `/<slug>` (catch-all racine) — type Sanity `page`.
+  ⚠️ Ne pas réutiliser un slug déjà pris par une page existante (`services`,
+  `a-propos`, `contact`, `blog`) pour éviter une collision de route au build.
+
 ---
 
 # CODING AGENTS: READ THIS FIRST

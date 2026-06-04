@@ -1,0 +1,92 @@
+---
+import Base from '../../layouts/Base.astro';
+import {
+  getPosts,
+  urlFor,
+  renderPortableText,
+  readingTime,
+  formatDateFr,
+  type BlogPost,
+} from '../../lib/sanity';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    params: {slug: post.slug},
+    props: {post},
+  }));
+}
+
+interface Props {
+  post: BlogPost;
+}
+
+const {post} = Astro.props;
+const body = renderPortableText(post.content);
+
+const schema = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.title,
+  datePublished: post.date,
+  author: {'@type': 'Person', name: 'Catherine Fougeray-Imbrechts'},
+  publisher: {'@type': 'Organization', name: 'Origenea'},
+});
+---
+
+<Base
+  title={`${post.title} | Le carnet de recherches — Origenea`}
+  description={post.title}
+  currentPage="blog"
+  footerVariant="blog"
+  schema={schema}
+>
+
+<!-- ============================ EN-TÊTE ARTICLE ============================ -->
+<section class="page-hero">
+  <div class="wrap narrow">
+    <a class="eyebrow reveal" href="/blog" style="justify-content:center">← Le carnet de recherches</a>
+    <h1 class="reveal">{post.title}</h1>
+    <div class="post-meta reveal" style="justify-content:center">
+      <span>{formatDateFr(post.date)}</span>
+      <span>· {readingTime(post.content)} min de lecture</span>
+      <span>· par Catherine</span>
+    </div>
+  </div>
+</section>
+
+{post.image && (
+  <section class="section--tight" style="padding-top:0">
+    <div class="wrap">
+      <img
+        src={urlFor(post.image).width(1280).height(720).fit('crop').auto('format').url()}
+        alt={post.image.alt || post.title}
+        style="width:100%;height:auto;border-radius:16px"
+      />
+    </div>
+  </section>
+)}
+
+<!-- ============================ CORPS DE L'ARTICLE ============================ -->
+<section class="section--tight" style="padding-top:8px">
+  <div class="wrap narrow article-body reveal" set:html={body} />
+</section>
+
+<style>
+  .article-body :global(p) { margin: 0 0 1.2em; line-height: 1.75; }
+  .article-body :global(h2) { margin: 1.6em 0 .5em; }
+  .article-body :global(h3) { margin: 1.4em 0 .4em; }
+  .article-body :global(ul),
+  .article-body :global(ol) { margin: 0 0 1.2em 1.2em; line-height: 1.7; }
+  .article-body :global(li) { margin: .3em 0; }
+  .article-body :global(blockquote) {
+    margin: 1.6em 0;
+    padding-left: 1.1em;
+    border-left: 3px solid var(--ochre);
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .article-body :global(a) { color: var(--ochre); }
+</style>
+
+</Base>

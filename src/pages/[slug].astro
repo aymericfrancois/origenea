@@ -1,0 +1,61 @@
+---
+import Base from '../layouts/Base.astro';
+import {
+  getPageSlugs,
+  getPageBySlug,
+  renderPortableText,
+} from '../lib/sanity';
+
+// Catch-all racine pour les pages éditées dans Sanity (type "page").
+// Astro priorise les routes statiques existantes (services, a-propos, contact,
+// blog) : éviter de réutiliser ces slugs dans Sanity pour ne pas créer de
+// collision de route au build.
+export async function getStaticPaths() {
+  const pages = await getPageSlugs();
+  return pages.map(({slug}) => ({params: {slug}}));
+}
+
+const {slug} = Astro.params;
+const page = await getPageBySlug(slug!);
+
+if (!page) {
+  return Astro.redirect('/404');
+}
+
+const body = renderPortableText(page.content);
+---
+
+<Base
+  title={`${page.title} | Origenea`}
+  description={page.title}
+  currentPage=""
+>
+
+<section class="page-hero">
+  <div class="wrap narrow">
+    <h1 class="reveal">{page.title}</h1>
+  </div>
+</section>
+
+<section class="section--tight" style="padding-top:8px">
+  <div class="wrap narrow article-body reveal" set:html={body} />
+</section>
+
+<style>
+  .article-body :global(p) { margin: 0 0 1.2em; line-height: 1.75; }
+  .article-body :global(h2) { margin: 1.6em 0 .5em; }
+  .article-body :global(h3) { margin: 1.4em 0 .4em; }
+  .article-body :global(ul),
+  .article-body :global(ol) { margin: 0 0 1.2em 1.2em; line-height: 1.7; }
+  .article-body :global(li) { margin: .3em 0; }
+  .article-body :global(blockquote) {
+    margin: 1.6em 0;
+    padding-left: 1.1em;
+    border-left: 3px solid var(--ochre);
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .article-body :global(a) { color: var(--ochre); }
+</style>
+
+</Base>

@@ -1,5 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
+import {
+  getPosts,
+  urlFor,
+  excerptFromBlocks,
+  readingTime,
+  formatDateFr,
+} from '../lib/sanity';
+
+const posts = await getPosts();
+const [featured, ...rest] = posts;
 ---
 
 <Base
@@ -18,170 +28,86 @@ import Base from '../layouts/Base.astro';
   </div>
 </section>
 
-<!-- ============================ ARTICLE À LA UNE ============================ -->
-<section class="section--tight">
-  <div class="wrap">
-    <a class="post-feature reveal" href="#">
-      <div class="post-feature__media">
-        <svg viewBox="0 0 640 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="width:100%;height:100%">
-          <rect width="640" height="420" fill="#163E47"/>
-          <g opacity="0.14" stroke="#E7E3D4" stroke-width="1.2">
-            <path d="M60 70h520M60 110h520M60 150h400M60 190h520M60 230h300M60 270h520M60 310h440M60 350h360"/>
-          </g>
-          <text x="40" y="360" font-family="Spectral, serif" font-size="360" fill="#B0894B" opacity="0.18">G</text>
-        </svg>
+{posts.length === 0 ? (
+  <!-- ============================ ÉTAT VIDE ============================ -->
+  <section class="section--tight">
+    <div class="wrap narrow" style="text-align:center">
+      <p class="lead">Aucun article pour le moment. Revenez bientôt !</p>
+    </div>
+  </section>
+) : (
+  <>
+  <!-- ============================ ARTICLE À LA UNE ============================ -->
+  <section class="section--tight">
+    <div class="wrap">
+      <a class="post-feature reveal" href={`/blog/${featured.slug}`}>
+        <div class="post-feature__media">
+          {featured.image ? (
+            <img
+              src={urlFor(featured.image).width(960).height(630).fit('crop').auto('format').url()}
+              alt={featured.image.alt || featured.title}
+              style="width:100%;height:100%;object-fit:cover"
+            />
+          ) : (
+            <svg viewBox="0 0 640 420" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="width:100%;height:100%">
+              <rect width="640" height="420" fill="#163E47"/>
+              <g opacity="0.14" stroke="#E7E3D4" stroke-width="1.2">
+                <path d="M60 70h520M60 110h520M60 150h400M60 190h520M60 230h300M60 270h520M60 310h440M60 350h360"/>
+              </g>
+              <text x="40" y="360" font-family="Spectral, serif" font-size="360" fill="#B0894B" opacity="0.18">G</text>
+            </svg>
+          )}
+        </div>
+        <div class="post-feature__body">
+          <span class="tag">À la une</span>
+          <h2>{featured.title}</h2>
+          <p class="lead">{excerptFromBlocks(featured.content, 220)}</p>
+          <div class="post-meta" style="margin-top:24px">
+            <span>{formatDateFr(featured.date)}</span>
+            <span>· {readingTime(featured.content)} min de lecture</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================ GRILLE D'ARTICLES ============================ -->
+  {rest.length > 0 && (
+    <section class="section--tight" style="padding-top:8px">
+      <div class="wrap">
+        <div class="grid grid-3">
+          {rest.map((post, i) => (
+            <a class="post-card reveal" data-delay={(i % 3) * 80} href={`/blog/${post.slug}`}>
+              <div class="post-card__media">
+                {post.image ? (
+                  <img
+                    src={urlFor(post.image).width(640).height(320).fit('crop').auto('format').url()}
+                    alt={post.image.alt || post.title}
+                    style="width:100%;height:100%;object-fit:cover"
+                  />
+                ) : (
+                  <svg class="archive-motif" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
+                    <rect width="320" height="160" fill="#163E47"/>
+                    <g opacity="0.16" stroke="#E7E3D4" stroke-width="1">
+                      <path d="M30 20h60v120h-60zM110 20h60v120h-60zM190 20h60v120h-60z"/>
+                    </g>
+                    <text x="205" y="120" font-family="Spectral, serif" font-size="120" fill="#B0603C" opacity="0.26">{post.title.charAt(0).toUpperCase()}</text>
+                  </svg>
+                )}
+              </div>
+              <div class="post-card__body">
+                <h3>{post.title}</h3>
+                <p style="color:var(--ink-soft);font-size:.98rem">{excerptFromBlocks(post.content)}</p>
+                <div class="post-meta"><span>{formatDateFr(post.date)}</span><span>· {readingTime(post.content)} min</span></div>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
-      <div class="post-feature__body">
-        <span class="tag">Généathème · À la une</span>
-        <h2>Les métiers oubliés de nos ancêtres girondins</h2>
-        <p class="lead">Tonneliers, gabariers, vignerons, rouliers : derrière ces professions disparues se dessine toute la vie quotidienne au bord de la Dordogne au XIXᵉ siècle. Petite plongée dans les actes qui les ont fait revivre.</p>
-        <div class="post-meta" style="margin-top:24px">
-          <span>12 mai 2026</span>
-          <span>· 6 min de lecture</span>
-          <span>· par Catherine</span>
-        </div>
-      </div>
-    </a>
-  </div>
-</section>
-
-<!-- ============================ FILTRES ============================ -->
-<section class="section--tight">
-  <div class="wrap">
-    <div class="chips reveal" role="tablist" aria-label="Filtrer les articles">
-      <button class="chip is-active">Tous</button>
-      <button class="chip">Généathème</button>
-      <button class="chip">Challenge AZ</button>
-      <button class="chip">Méthode</button>
-      <button class="chip">Archives de la Gironde</button>
-    </div>
-  </div>
-</section>
-
-<!-- ============================ GRILLE D'ARTICLES ============================ -->
-<section class="section--tight" style="padding-top:8px">
-  <div class="wrap">
-    <div class="grid grid-3">
-
-      <a class="post-card reveal" href="#">
-        <div class="post-card__media">
-          <svg class="archive-motif" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
-            <rect width="320" height="160" fill="#163E47"/>
-            <g opacity="0.16" stroke="#E7E3D4" stroke-width="1">
-              <path d="M30 20h60v120h-60zM110 20h60v120h-60zM190 20h60v120h-60z"/>
-            </g>
-            <text x="205" y="120" font-family="Spectral, serif" font-size="120" fill="#B0603C" opacity="0.26">A</text>
-          </svg>
-        </div>
-        <div class="post-card__body">
-          <span class="tag">Challenge AZ</span>
-          <h3>A comme Archives : par où commencer</h3>
-          <p style="color:var(--ink-soft);font-size:.98rem">Premier billet du Challenge AZ : les bons réflexes pour ouvrir une enquête sans se perdre dans la masse des documents.</p>
-          <div class="post-meta"><span>2 nov. 2025</span><span>· 5 min</span></div>
-        </div>
-      </a>
-
-      <a class="post-card reveal" data-delay="80" href="#">
-        <div class="post-card__media">
-          <svg class="archive-motif" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
-            <rect width="320" height="160" fill="#163E47"/>
-            <g opacity="0.16" stroke="#E7E3D4" stroke-width="1" fill="none">
-              <circle cx="160" cy="80" r="58"/>
-              <circle cx="160" cy="80" r="38"/>
-              <circle cx="160" cy="80" r="18"/>
-            </g>
-            <text x="118" y="120" font-family="Spectral, serif" font-size="120" fill="#7C9A78" opacity="0.3">F</text>
-          </svg>
-        </div>
-        <div class="post-card__body">
-          <span class="tag">Méthode</span>
-          <h3>Lire un acte du XVIIIᵉ siècle</h3>
-          <p style="color:var(--ink-soft);font-size:.98rem">Abréviations, formules latines, graphies surprenantes : petit guide pour apprivoiser la paléographie.</p>
-          <div class="post-meta"><span>18 mars 2026</span><span>· 8 min</span></div>
-        </div>
-      </a>
-
-      <a class="post-card reveal" data-delay="160" href="#">
-        <div class="post-card__media">
-          <svg class="archive-motif" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
-            <rect width="320" height="160" fill="#163E47"/>
-            <g opacity="0.15" stroke="#E7E3D4" stroke-width="1">
-              <path d="M40 40h240M40 64h240M40 88h180M40 112h240"/>
-            </g>
-            <text x="200" y="128" font-family="Spectral, serif" font-size="120" fill="#B0894B" opacity="0.24">B</text>
-          </svg>
-        </div>
-        <div class="post-card__body">
-          <span class="tag">Challenge AZ</span>
-          <h3>B comme Bans de mariage</h3>
-          <p style="color:var(--ink-soft);font-size:.98rem">Ces affichages oubliés révèlent parfois un lieu d'origine ou un métier que l'acte de mariage tait.</p>
-          <div class="post-meta"><span>3 nov. 2025</span><span>· 4 min</span></div>
-        </div>
-      </a>
-
-      <a class="post-card reveal" href="#">
-        <div class="post-card__media">
-          <svg class="archive-motif" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
-            <rect width="320" height="160" fill="#163E47"/>
-            <g opacity="0.14" stroke="#E7E3D4" stroke-width="1" fill="none">
-              <path d="M60 130l60-70 50 40 80-80" stroke-linejoin="round"/>
-              <circle cx="60" cy="130" r="4"/>
-              <circle cx="250" cy="20" r="4"/>
-            </g>
-            <text x="30" y="128" font-family="Spectral, serif" font-size="120" fill="#7C9A78" opacity="0.26">L</text>
-          </svg>
-        </div>
-        <div class="post-card__body">
-          <span class="tag">Archives de la Gironde</span>
-          <h3>Le trésor numérisé des AD33</h3>
-          <p style="color:var(--ink-soft);font-size:.98rem">Tour d'horizon des fonds en ligne des Archives départementales de la Gironde, et comment s'y repérer.</p>
-          <div class="post-meta"><span>27 févr. 2026</span><span>· 7 min</span></div>
-        </div>
-      </a>
-
-      <a class="post-card reveal" data-delay="80" href="#">
-        <div class="post-card__media">
-          <svg class="archive-motif" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
-            <rect width="320" height="160" fill="#163E47"/>
-            <g opacity="0.15" stroke="#E7E3D4" stroke-width="1" fill="none">
-              <path d="M160 30v100M120 60c0 22 18 40 40 40M200 60c0 22-18 40-40 40"/>
-            </g>
-            <text x="118" y="124" font-family="Spectral, serif" font-size="120" fill="#B0603C" opacity="0.24">G</text>
-          </svg>
-        </div>
-        <div class="post-card__body">
-          <span class="tag">Généathème</span>
-          <h3>Retrouver un ancêtre vigneron</h3>
-          <p style="color:var(--ink-soft);font-size:.98rem">Du registre de la vigne aux baux à colonage : les sources qui racontent la vie viticole du Libournais.</p>
-          <div class="post-meta"><span>14 janv. 2026</span><span>· 6 min</span></div>
-        </div>
-      </a>
-
-      <a class="post-card reveal" data-delay="160" href="#">
-        <div class="post-card__media">
-          <svg class="archive-motif" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
-            <rect width="320" height="160" fill="#163E47"/>
-            <g opacity="0.15" stroke="#E7E3D4" stroke-width="1">
-              <path d="M30 30h60v120h-60zM110 30h60v120h-60zM190 30h60v120h-60z"/>
-            </g>
-            <text x="200" y="128" font-family="Spectral, serif" font-size="120" fill="#B0894B" opacity="0.24">C</text>
-          </svg>
-        </div>
-        <div class="post-card__body">
-          <span class="tag">Challenge AZ</span>
-          <h3>C comme Cadastre napoléonien</h3>
-          <p style="color:var(--ink-soft);font-size:.98rem">Comment ces plans du début du XIXᵉ siècle permettent de retrouver la maison de famille, parcelle par parcelle.</p>
-          <div class="post-meta"><span>4 nov. 2025</span><span>· 5 min</span></div>
-        </div>
-      </a>
-
-    </div>
-
-    <div class="reveal" style="text-align:center;margin-top:48px">
-      <button class="btn btn--ghost">Voir plus d'articles</button>
-    </div>
-  </div>
-</section>
+    </section>
+  )}
+  </>
+)}
 
 <!-- ============================ NEWSLETTER ============================ -->
 <section class="section band-paper2 band-edge-top band-edge-bottom">
